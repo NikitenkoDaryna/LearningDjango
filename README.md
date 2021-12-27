@@ -1,1 +1,1 @@
-# LearnngDjango
+# Learning Django (CRM)
