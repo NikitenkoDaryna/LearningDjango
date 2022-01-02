@@ -145,16 +145,16 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
         
         if user.is_organisor:
             queryset = Lead.objects.filter(
-                organisation=user.userprofile
+                organisation=user.userprofile,
             )
         else:
             queryset = Lead.objects.filter(
-                organisation=user.agent.organisation
+                organisation=user.agent.organisation,
             )
-            
+            queryset = queryset.filter(agent__user=user)
         # all the leads that do not belong to a category
         context.update({
-            "unassigned_lead_count": queryset.filter(category__isnull=True).count()
+            "unassigned_lead_count": queryset.filter(category__isnull=True).count(),
         })
         return context
     

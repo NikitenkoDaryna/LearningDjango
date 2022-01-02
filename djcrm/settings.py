@@ -1,15 +1,13 @@
 from pathlib import Path
 import  os
 
-
-
-DEBUG = False
+DEBUG = True
 SECRET_KEY = 'django-insecure-hu^ed25ij^$_nmaxd41+2xa0m($(bje@n9a5&h^&j+5^p=y7kv'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ALLOWED_HOSTS = ['dj-django-crm.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['dj-django-crm.herokuapp.com']
 
 
 # Application definition
@@ -66,10 +64,11 @@ WSGI_APPLICATION = 'djcrm.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'djcrm',
-        "USER": 'djcrmuser',
-        "PASSWORD": 'djcrm1234',
-        "HOST": 'localhost',
+        'NAME': 'dct29og5e7q9j3',
+        "USER": 'dqltpodghwnlrg',
+        "PASSWORD": 'b30bcedc8afca8037f6aec1104b715d667189b66068f65c4492a81fb8cfe9f43',
+        'HOST': 'ec2-54-83-157-174.compute-1.amazonaws.com',
+        'PORT':'5432'
     }
 }
 
