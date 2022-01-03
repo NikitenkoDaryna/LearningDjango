@@ -3,10 +3,9 @@ from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from agents.mixins import OrganisorAndLoginRequiredMixin
 from leads.forms import LeadModelForm, CustomUserCreationForm, AssignAgentForm, LeadCategoryUpdateForm
-from .models import Category, Lead
+from .models import Lead
 from django.views import generic
-
-# Create your views here.
+from .helpers import filter_leads_by_category, filter_leads_by_role
 
 class SignupView(generic.CreateView):
     template_name = "registration/signup.html"
@@ -24,20 +23,7 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
     
     def get_queryset(self):
         user = self.request.user
-
-        # initial queryset of leads for the entire organisation
-        if user.is_organisor:
-            queryset = Lead.objects.filter(
-                organisation=user.userprofile, 
-                agent__isnull=False
-            )
-        else:
-            queryset = Lead.objects.filter(
-                organisation=user.agent.organisation, 
-                agent__isnull=False
-            )
-            # filter for the agent that is logged in
-            queryset = queryset.filter(agent__user=user)
+        queryset = filter_leads_by_role(user)
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -59,19 +45,7 @@ class LeadDetailView(LoginRequiredMixin, generic.DetailView):
     
     def get_queryset(self):
         user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_organisor:
-            queryset = Lead.objects.filter(
-                organisation=user.userprofile, 
-                agent__isnull=False
-            )
-        else:
-            queryset = Lead.objects.filter(
-                organisation=user.agent.organisation, 
-                agent__isnull=False
-            )
-            # filter for the agent that is logged in
-            queryset = queryset.filter(agent__user=user)
+        queryset = filter_leads_by_role(user)
         return queryset
     
 class LeadCreateView(OrganisorAndLoginRequiredMixin, generic.CreateView):
@@ -142,50 +116,34 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(CategoryListView, self).get_context_data(**kwargs)
         user = self.request.user
-        
-        if user.is_organisor:
-            queryset = Lead.objects.filter(
-                organisation=user.userprofile,
-            )
-        else:
-            queryset = Lead.objects.filter(
-                organisation=user.agent.organisation,
-            )
-            queryset = queryset.filter(agent__user=user)
-        # all the leads that do not belong to a category
+        queryset = filter_leads_by_role(user)
         context.update({
             "unassigned_lead_count": queryset.filter(category__isnull=True).count(),
+            "assigned_leads": queryset.filter(category__isnull=False)
         })
         return context
     
     def get_queryset(self):
         user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_organisor:
-            queryset = Category.objects.filter(
-                organisation=user.userprofile
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation=user.agent.organisation
-            )
+        queryset = filter_leads_by_category(user)
         return queryset
  
 class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
     template_name = "leads/category_detail.html"
     context_object_name = "category"
 
+    def get_context_data(self, **kwargs):
+        context = super(CategoryDetailView, self).get_context_data(**kwargs)
+        user = self.request.user
+        queryset = filter_leads_by_role(user)
+        context.update({
+            "leads": queryset.filter(category__isnull=False)
+        })
+        return context
+    
     def get_queryset(self):
         user = self.request.user
-        # initial queryset of leads for the entire organisation
-        if user.is_organisor:
-            queryset = Category.objects.filter(
-                organisation=user.userprofile
-            )
-        else:
-            queryset = Category.objects.filter(
-                organisation=user.agent.organisation
-            )
+        queryset = filter_leads_by_category(user)
         return queryset
             
 class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
@@ -194,16 +152,7 @@ class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
     
     def get_queryset(self):
         user = self.request.user
-        if user.is_organisor:
-            queryset = Lead.objects.filter(
-                organisation=user.userprofile
-            )
-        else:
-            queryset = Lead.objects.filter(
-                organisation=user.agent.organisation
-            )
-            # filter for the agent that is logged in
-            queryset = queryset.filter(agent__user=user)
+        queryset = filter_leads_by_role(user)
         return queryset
             
     def get_success_url(self):
