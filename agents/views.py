@@ -52,9 +52,29 @@ class AgentUpdateView(OrganisorAndLoginRequiredMixin, generic.UpdateView):
     template_name = "agents/agent_update.html"
     form_class =AgentModelForm
     
+    def get_form_kwargs(self, **kwargs):
+     kwargs = super().get_form_kwargs()
+     if hasattr(self, 'object'):
+        print(self.object)
+        kwargs.update({'instance': self.object})
+     return kwargs
+    
+    def form_valid(self, form):
+        username = form.cleaned_data.get("username")
+        first_name = form.cleaned_data.get("first_name")
+        last_name = form.cleaned_data.get("last_name")
+        email_addres = form.cleaned_data.get("email")
+        agent = form.save()
+        agent.user.username = username
+        agent.user.first_name = first_name
+        agent.user.last_name = last_name
+        agent.user.email = email_addres
+        agent.user.save()
+        return super(AgentUpdateView, self).form_valid(form)
+    
     def get_queryset(self):
-        organisation = self.request.user.userprofile
-        return Agent.objects.filter(organisation=organisation)
+         organisation = self.request.user.userprofile
+         return Agent.objects.filter(organisation=organisation)
     
     def get_success_url(self):
         return reverse("agents:agent-list")
