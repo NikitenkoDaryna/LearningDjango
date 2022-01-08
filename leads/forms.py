@@ -15,7 +15,6 @@ class LeadModelForm(forms.ModelForm):
             'phone_number',
             'email',
             'agent',
-            'organisation'
         )
 
 class LeadForm(forms.Form):
