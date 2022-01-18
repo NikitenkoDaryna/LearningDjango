@@ -1,4 +1,4 @@
 # Learning Django (CRM)
-## Login as orginiser using these credentials:
+## Login as organiser using these credentials:
 - login:daryna
 - password:password
