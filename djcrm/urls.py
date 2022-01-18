@@ -14,6 +14,8 @@ from leads.views import LandingPageView, SignupView
 
 
 urlpatterns = [
+    path('jet/', include('jet.urls', 'jet')),
+    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     path('admin/', admin.site.urls),
     path('', LandingPageView.as_view(), name="landing-page"),
     path('leads/', include('leads.urls', namespace="leads")),

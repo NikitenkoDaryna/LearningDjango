@@ -14,6 +14,8 @@ ALLOWED_HOSTS = ['dj-django-crm.herokuapp.com']
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -134,3 +136,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
+X_FRAME_OPTIONS = 'SAMEORIGIN'
